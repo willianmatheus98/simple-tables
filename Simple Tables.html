@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>Simple Table</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+
+
+    <!-- Adicionando Javascript -->
+    <script type="text/javascript">
+        
+
+        function consultaApi() {
+    	    requisition("https://swapi.co/api/people/?format=json",'tabela1'); 
+		    requisition("https://swapi.co/api/planets/?format=json",'tabela2'); 
+		    requisition("https://swapi.co/api/films/?format=json",'tabela3'); 
+		    requisition("https://swapi.co/api/species/?format=json",'tabela4'); 
+		    requisition("https://swapi.co/api/vehicles/?format=json",'tabela5'); 
+		    requisition("https://swapi.co/api/starships/?format=json",'tabela6');
+        };
+
+        function requisition(endpoint, selector){
+        	$('#conteudo').append('<table class="ui celled table" id="'+selector+'"></table>');
+        	var myList = new Array();
+
+            //Consulta a api
+            $.getJSON(endpoint, function(dado) {
+                for (var i = dado.results.length - 1; i >= 0; i--) {
+                    myList.push(dado.results[i]);
+
+                }
+                geraTabelaHtml('#'+selector, myList);
+            });
+        }
+
+        // Controi a tabela de acordo com a lista
+        function geraTabelaHtml(selector, myList) {
+            var columns = addCabecalho(myList, selector);
+
+            for (var i = 0; i < myList.length; i++) {
+                var row$ = $('<tr/>');
+                for (var colIndex = 0; colIndex < columns.length; colIndex++) {
+                    var cellValue = myList[i][columns[colIndex]];
+                    if (cellValue == null) cellValue = "";
+                    row$.append($('<td/>').html(cellValue));
+                }
+                $(selector).append(row$);
+            }
+        }
+
+        function addCabecalho(myList, selector) {
+            var columnSet = [];
+            var thead = $('<thead/>');
+            var headerTr$ = $('<tr/>');
+
+            for (var i = 0; i < myList.length; i++) {
+                var rowHash = myList[i];
+                for (var key in rowHash) {
+                    if ($.inArray(key, columnSet) == -1) {
+                        columnSet.push(key);
+                        headerTr$.append($('<th/>').html(key));
+                    }
+                }
+            }
+            thead.append(headerTr$);
+            $(selector).append(thead);
+
+            return columnSet;
+        }
+    </script>
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<body onLoad="consultaApi('#tabela')">
+    <div id="conteudo">
+        <h1>Simples Tables</h1>
+    </div>
+</body>
+
+</html>'
